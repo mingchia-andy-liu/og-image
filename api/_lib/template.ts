@@ -61,10 +61,6 @@ function getCss(theme: string, fontSize: string) {
         letter-spacing: -5px;
     }
 
-    code:before, code:after {
-        content: '\`';
-    }
-
     .logo-wrapper {
         display: flex;
         align-items: center;
@@ -105,6 +101,7 @@ function getCss(theme: string, fontSize: string) {
 
 export function getHtml(parsedReq: ParsedRequest) {
     const { text, theme, md, fontSize, images, widths, heights } = parsedReq;
+    console.log(marked(text));
     return `<!DOCTYPE html>
 <html>
     <meta charset="utf-8">
