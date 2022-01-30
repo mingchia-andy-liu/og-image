@@ -5,7 +5,7 @@ import { ParsedRequest } from './types';
 export function parseRequest(req: IncomingMessage) {
     console.log('HTTP ' + req.url);
     const { pathname, query } = parse(req.url || '/', true);
-    const { fontSize, images, widths, heights, theme, md, confettie } = (query || {});
+    const { fontSize, images, widths, heights, theme, md, showConfetties, emojis } = (query || {});
 
     if (Array.isArray(fontSize)) {
         throw new Error('Expected a single fontSize');
@@ -13,7 +13,7 @@ export function parseRequest(req: IncomingMessage) {
     if (Array.isArray(theme)) {
         throw new Error('Expected a single theme');
     }
-    
+
     const arr = (pathname || '/').slice(1).split('.');
     let extension = '';
     let text = '';
@@ -35,8 +35,8 @@ export function parseRequest(req: IncomingMessage) {
         images: getArray(images),
         widths: getArray(widths),
         heights: getArray(heights),
-        confettie: confettie === '1',
-        emojis: ['👏','🥵','🥶','🥵','👩‍👩‍👦']
+        showConfetties: showConfetties === '1',
+        emojis: getArray(emojis),
     };
     parsedRequest.images = removeNullOrEmpty(parsedRequest.images);
     return parsedRequest;

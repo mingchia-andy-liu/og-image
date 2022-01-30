@@ -181,7 +181,7 @@ interface AppState extends ParsedRequest {
     widths: string[];
     heights: string[];
     overrideUrl: URL | null;
-    confettie: boolean;
+    emojisText: string;
 }
 
 type SetState = (state: Partial<AppState>) => void;
@@ -211,7 +211,8 @@ const App = (_: any, state: AppState, setState: SetState) => {
         messageToast = '',
         loading = true,
         overrideUrl = null,
-        confettie = false,
+        showConfetties = false,
+        emojisText='',
     } = state;
     const mdValue = md ? '1' : '0';
     const url = new URL(window.location.origin);
@@ -219,7 +220,7 @@ const App = (_: any, state: AppState, setState: SetState) => {
     url.searchParams.append('theme', theme);
     url.searchParams.append('md', mdValue);
     url.searchParams.append('fontSize', fontSize);
-    url.searchParams.append('confettie', confettie ? '1' : '0');
+    url.searchParams.append('showConfetties', showConfetties ? '1' : '');
     for (let image of images) {
         url.searchParams.append('images', image);
     }
@@ -228,6 +229,9 @@ const App = (_: any, state: AppState, setState: SetState) => {
     }
     for (let height of heights) {
         url.searchParams.append('heights', height);
+    }
+    for (let emoji of [...emojisText]) {
+        url.searchParams.append('emojis', emoji);
     }
 
     return H('div',
@@ -280,11 +284,21 @@ const App = (_: any, state: AppState, setState: SetState) => {
                     })
                 }),
                 H(Field, {
-                    label: 'Confetti*',
+                    label: 'Emoji background*',
+                    input: H(TextInput, {
+                        value: emojisText,
+                        oninput: (val: string) => {
+                            console.log('oninput ' + val);
+                            setLoadingState({ emojisText: val, overrideUrl: url });
+                        }
+                    })
+                }),
+                H(Field, {
+                    label: 'Confetti**',
                     input: H(Checkbox, {
                         value: text,
                         onclick: () => {
-                            setLoadingState({ confettie: !confettie, overrideUrl: url});
+                            setLoadingState({ showConfetties: !showConfetties, overrideUrl: url});
                         }
                     })
                 }),

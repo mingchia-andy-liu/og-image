@@ -112,16 +112,8 @@ function getCss(theme: string, fontSize: string) {
     }`;
 }
 
-// const defaultOption = {
-//     size: 60,
-//     sizeX: 40,
-//     sizeY: 38,
-//     spaceX: 0,
-//     spaceY: 0,
-// }
-
 export function getHtml(parsedReq: ParsedRequest) {
-    const { text, theme, md, fontSize, images, widths, heights, confettie, emojis } = parsedReq;
+    const { text, theme, md, fontSize, images, widths, heights, showConfetties, emojis } = parsedReq;
 
     const emojiEles = formatEmojis(emojis);
     return `<!DOCTYPE html>
@@ -131,7 +123,7 @@ export function getHtml(parsedReq: ParsedRequest) {
     <title>Generated Image</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     ${
-        confettie ? '<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>' : ''
+        showConfetties ? '<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>' : ''
     }
     <style>
         ${getCss(theme, fontSize)}
@@ -154,8 +146,9 @@ export function getHtml(parsedReq: ParsedRequest) {
         </div>
     </body>
     ${
-        confettie ? `
+        showConfetties ? `
         <script>
+            var timeout = -1;
             var duration = 15 * 1000;
             var animationEnd = Date.now() + duration;
             var defaults = { startVelocity: 50, spread: 360, ticks: 60, zIndex: 0 };
