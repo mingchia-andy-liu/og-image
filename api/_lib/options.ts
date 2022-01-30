@@ -15,13 +15,13 @@ export async function getOptions(isDev: boolean) {
     let options: Options;
     if (isDev) {
         options = {
-            args: [],
+            args: ['--flag-switches-begin', '--enable-features=COLRV1Fonts', '--flag-switches-end'],
             executablePath: exePath,
             headless: true
         };
     } else {
         options = {
-            args: chrome.args,
+            args: chrome.args.concat(['--flag-switches-begin', '--enable-features=COLRV1Fonts', '--flag-switches-end']),
             executablePath: await chrome.executablePath,
             headless: chrome.headless,
         };

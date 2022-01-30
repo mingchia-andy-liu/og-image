@@ -1,26 +1,33 @@
 
 import { readFileSync } from 'fs';
 import { marked } from 'marked';
+import { formatEmojis } from './emoji';
 import { sanitizeHtml } from './sanitizer';
 import { ParsedRequest } from './types';
-const twemoji = require('twemoji');
-const twOptions = { folder: 'svg', ext: '.svg' };
-const emojify = (text: string) => twemoji.parse(text, twOptions);
+
 
 const rglr = readFileSync(`${__dirname}/../_fonts/Inter-Regular.woff2`).toString('base64');
 const bold = readFileSync(`${__dirname}/../_fonts/Inter-Bold.woff2`).toString('base64');
 const mono = readFileSync(`${__dirname}/../_fonts/Vera-Mono.woff2`).toString('base64');
+const tw = readFileSync(`${__dirname}/../_fonts/twemoji-glyf_colr_1.ttf`).toString('base64');
 
-function getCss(theme: string, fontSize: string) {
+function getCss(theme: string, fontSize: string, emojiBackground: string) {
     let background = 'white';
     let foreground = 'black';
     let radial = 'lightgray';
+    let bgImage = `radial-gradient(circle at 25px 25px, ${radial} 2%, transparent 0%), radial-gradient(circle at 75px 75px, ${radial} 2%, transparent 0%)`;
 
     if (theme === 'dark') {
         background = 'black';
         foreground = 'white';
         radial = 'dimgray';
     }
+
+    if (emojiBackground != null) {
+        background = '';
+        bgImage = emojiBackground;
+    }
+
     return `
     @font-face {
         font-family: 'Inter';
@@ -41,17 +48,26 @@ function getCss(theme: string, fontSize: string) {
         font-style: normal;
         font-weight: normal;
         src: url(data:font/woff2;charset=utf-8;base64,${mono})  format("woff2");
-      }
+    }
+
+    @font-face {
+        font-family: 'Twitter';
+        font-style:  normal;
+        font-weight: normal;
+        src: url(data:font/ttf;charset=utf-8;base64,${tw}) format('truetype');
+    }
 
     body {
         background: ${background};
-        background-image: radial-gradient(circle at 25px 25px, ${radial} 2%, transparent 0%), radial-gradient(circle at 75px 75px, ${radial} 2%, transparent 0%);
+        background-image: ${bgImage};
         background-size: 100px 100px;
         height: 100vh;
         display: flex;
         text-align: center;
         align-items: center;
         justify-content: center;
+        font-family: 'Twitter', sans-serif;
+        font-style: normal;
     }
 
     code {
@@ -91,9 +107,7 @@ function getCss(theme: string, fontSize: string) {
     }
     
     .heading {
-        font-family: 'Inter', sans-serif;
         font-size: ${sanitizeHtml(fontSize)};
-        font-style: normal;
         color: ${foreground};
         line-height: 1.8;
     }`;
@@ -101,6 +115,9 @@ function getCss(theme: string, fontSize: string) {
 
 export function getHtml(parsedReq: ParsedRequest) {
     const { text, theme, md, fontSize, images, widths, heights, confettie } = parsedReq;
+
+    const emojis = formatEmojis(['🧐','🐵','🐮']);
+    const background = `url("data:image/svg+xml;utf8,${emojis.replaceAll('"', `\\'`)}")`;
     return `<!DOCTYPE html>
 <html>
 <head>
@@ -111,7 +128,7 @@ export function getHtml(parsedReq: ParsedRequest) {
         confettie ? '<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>' : ''
     }
     <style>
-        ${getCss(theme, fontSize)}
+        ${getCss(theme, fontSize, background)}
     </style>
 </head>
     <body>
@@ -125,9 +142,10 @@ export function getHtml(parsedReq: ParsedRequest) {
                     </div>
                     <div class="spacer">` 
                 : ''}
-            <div class="heading">${emojify(
-                md ? marked(text) : sanitizeHtml(text)
-            )}
+            <div class="heading">${md ? marked(text) : sanitizeHtml(text)}
+            </div>
+            <div style="border: red 5px solid">
+            ${emojis}
             </div>
         </div>
     </body>
