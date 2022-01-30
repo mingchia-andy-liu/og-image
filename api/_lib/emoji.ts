@@ -1,5 +1,8 @@
 import {JSDOM} from 'jsdom';
+import twemoji from 'twemoji';
 
+const twOptions = { folder: 'svg', ext: '.svg' };
+export const emojify = (text: string) => twemoji.parse(text, twOptions);
 const svgNS = "http://www.w3.org/2000/svg";
 
 interface EmojiOptions {
@@ -10,7 +13,33 @@ interface EmojiOptions {
     spaceY: number;
 }
 
-export const formatEmojis = (emojis: string[], options: EmojiOptions) => {
+function randomInRange(min: number, max: number) {
+    return Math.random() * (max - min) + min;
+}
+
+
+export const formatEmojis = (emojis: string[]) => {
+    return emojis
+        .concat(emojis)
+        .concat(emojis)
+        .concat(emojis)
+        .map(emoji => {
+            const x = randomInRange(-10, 110);
+            const y = randomInRange(-10, 110);
+            const deg = randomInRange(0, 360);
+            return `
+            <div 
+                class="random" 
+                style="font-size: ${randomInRange(1, 15)}em;top:${x}%; left:${y}%; transform: rotate(${deg}deg);"
+            >
+                ${emoji}
+            </div>`
+        })
+        .map(emojify)
+        .join('');
+}
+
+export const formatEmojis2 = (emojis: string[], options: EmojiOptions) => {
     const dom = new JSDOM(`
         <!doctype html>
         <html lang="en">

@@ -1,7 +1,7 @@
 
 import { readFileSync } from 'fs';
 import { marked } from 'marked';
-import { formatEmojis } from './emoji';
+import { emojify, formatEmojis } from './emoji';
 import { sanitizeHtml } from './sanitizer';
 import { ParsedRequest } from './types';
 
@@ -9,9 +9,8 @@ import { ParsedRequest } from './types';
 const rglr = readFileSync(`${__dirname}/../_fonts/Inter-Regular.woff2`).toString('base64');
 const bold = readFileSync(`${__dirname}/../_fonts/Inter-Bold.woff2`).toString('base64');
 const mono = readFileSync(`${__dirname}/../_fonts/Vera-Mono.woff2`).toString('base64');
-const tw = readFileSync(`${__dirname}/../_fonts/twemoji-glyf_colr_1.ttf`).toString('base64');
 
-function getCss(theme: string, fontSize: string, emojiBackground: string, backgroundSize = '100px 100px') {
+function getCss(theme: string, fontSize: string) {
     let background = 'white';
     let foreground = 'black';
     let radial = 'lightgray';
@@ -21,11 +20,6 @@ function getCss(theme: string, fontSize: string, emojiBackground: string, backgr
         background = 'black';
         foreground = 'white';
         radial = 'dimgray';
-    }
-
-    if (emojiBackground != null) {
-        background = '';
-        bgImage = emojiBackground;
     }
 
     return `
@@ -50,22 +44,15 @@ function getCss(theme: string, fontSize: string, emojiBackground: string, backgr
         src: url(data:font/woff2;charset=utf-8;base64,${mono})  format("woff2");
     }
 
-    @font-face {
-        font-family: 'Twitter';
-        font-style:  normal;
-        font-weight: normal;
-        src: url(data:font/ttf;charset=utf-8;base64,${tw}) format('truetype');
-    }
-
     * {
-        font-family: 'Twitter', sans-serif;
+        font-family: 'Inter', 'Vera', sans-serif;
         font-style: normal;
     }
 
     body {
         background: ${background};
         background-image: ${bgImage};
-        background-size: ${backgroundSize};
+        background-size: 100px 100px;
         height: 100vh;
         display: flex;
         text-align: center;
@@ -115,22 +102,28 @@ function getCss(theme: string, fontSize: string, emojiBackground: string, backgr
         font-size: ${sanitizeHtml(fontSize)};
         color: ${foreground};
         line-height: 1.8;
+    }
+    
+    .random {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: -1;
     }`;
 }
 
-const defaultOption = {
-    size: 60,
-    sizeX: 40,
-    sizeY: 38,
-    spaceX: 0,
-    spaceY: 0,
-}
+// const defaultOption = {
+//     size: 60,
+//     sizeX: 40,
+//     sizeY: 38,
+//     spaceX: 0,
+//     spaceY: 0,
+// }
 
 export function getHtml(parsedReq: ParsedRequest) {
-    const { text, theme, md, fontSize, images, widths, heights, confettie } = parsedReq;
+    const { text, theme, md, fontSize, images, widths, heights, confettie, emojis } = parsedReq;
 
-    const [emojis, backgroundSize] = formatEmojis(['🧐','🐵','🐮'], defaultOption);
-    const background = `url("data:image/svg+xml;utf8,${emojis.replaceAll('"', `\\'`)}")`;
+    const emojiEles = formatEmojis(emojis);
     return `<!DOCTYPE html>
 <html>
 <head>
@@ -141,7 +134,7 @@ export function getHtml(parsedReq: ParsedRequest) {
         confettie ? '<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>' : ''
     }
     <style>
-        ${getCss(theme, fontSize, background, backgroundSize)}
+        ${getCss(theme, fontSize)}
     </style>
 </head>
     <body>
@@ -155,11 +148,9 @@ export function getHtml(parsedReq: ParsedRequest) {
                     </div>
                     <div class="spacer">` 
                 : ''}
-            <div class="heading">${md ? marked(text) : sanitizeHtml(text)}
+            <div class="heading">${emojify(md ? marked(text) : sanitizeHtml(text))}
             </div>
-            <div style="border: red 5px solid">
-            ${emojis}
-            </div>
+            ${emojiEles}
         </div>
     </body>
     ${
@@ -170,7 +161,7 @@ export function getHtml(parsedReq: ParsedRequest) {
             var defaults = { startVelocity: 50, spread: 360, ticks: 60, zIndex: 0 };
             
             function randomInRange(min, max) {
-            return Math.random() * (max - min) + min;
+                return Math.random() * (max - min) + min;
             }
             
             var interval = setInterval(function() {

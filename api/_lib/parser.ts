@@ -36,6 +36,7 @@ export function parseRequest(req: IncomingMessage) {
         widths: getArray(widths),
         heights: getArray(heights),
         confettie: confettie === '1',
+        emojis: ['👏','🥵','🥶','🥵','👩‍👩‍👦']
     };
     parsedRequest.images = removeNullOrEmpty(parsedRequest.images);
     return parsedRequest;
