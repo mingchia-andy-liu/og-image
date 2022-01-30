@@ -74,6 +74,16 @@ const TextInput = ({ value, oninput }: TextInputProps) => {
     );
 }
 
+interface CheckboxProps {
+    onclick: (val: string) => void;
+}
+
+const Checkbox = ({onclick}: CheckboxProps) => {
+    return H('input',
+        { className: '', type: 'checkbox', onclick }
+    );
+}
+
 interface ButtonProps {
     label: string;
     onclick: () => void;
@@ -171,6 +181,7 @@ interface AppState extends ParsedRequest {
     widths: string[];
     heights: string[];
     overrideUrl: URL | null;
+    confettie: boolean;
 }
 
 type SetState = (state: Partial<AppState>) => void;
@@ -200,6 +211,7 @@ const App = (_: any, state: AppState, setState: SetState) => {
         messageToast = '',
         loading = true,
         overrideUrl = null,
+        confettie = false,
     } = state;
     const mdValue = md ? '1' : '0';
     const url = new URL(window.location.origin);
@@ -207,6 +219,7 @@ const App = (_: any, state: AppState, setState: SetState) => {
     url.searchParams.append('theme', theme);
     url.searchParams.append('md', mdValue);
     url.searchParams.append('fontSize', fontSize);
+    url.searchParams.append('confettie', confettie ? '1' : '0');
     for (let image of images) {
         url.searchParams.append('images', image);
     }
@@ -263,6 +276,15 @@ const App = (_: any, state: AppState, setState: SetState) => {
                         oninput: (val: string) => {
                             console.log('oninput ' + val);
                             setLoadingState({ text: val, overrideUrl: url });
+                        }
+                    })
+                }),
+                H(Field, {
+                    label: 'Confetti*',
+                    input: H(Checkbox, {
+                        value: text,
+                        onclick: () => {
+                            setLoadingState({ confettie: !confettie, overrideUrl: url});
                         }
                     })
                 }),
