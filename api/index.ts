@@ -15,11 +15,11 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
             res.end(html);
             return;
         }
-        const { fileType } = parsedReq;
-        const file = await getScreenshot(html, fileType, isDev);
+        const { fileType, confettie } = parsedReq;
+        const file = await getScreenshot(html, fileType, isDev, confettie);
         res.statusCode = 200;
         res.setHeader('Content-Type', `image/${fileType}`);
-        res.setHeader('Cache-Control', `public, immutable, no-transform, s-maxage=31536000, max-age=31536000`);
+        res.setHeader('Cache-Control', confettie ? 'no-cache, no-store' : `public, immutable, no-transform, s-maxage=31536000, max-age=31536000`);
         res.end(file);
     } catch (e) {
         res.statusCode = 500;
