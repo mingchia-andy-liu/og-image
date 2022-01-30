@@ -11,7 +11,7 @@ const bold = readFileSync(`${__dirname}/../_fonts/Inter-Bold.woff2`).toString('b
 const mono = readFileSync(`${__dirname}/../_fonts/Vera-Mono.woff2`).toString('base64');
 const tw = readFileSync(`${__dirname}/../_fonts/twemoji-glyf_colr_1.ttf`).toString('base64');
 
-function getCss(theme: string, fontSize: string, emojiBackground: string) {
+function getCss(theme: string, fontSize: string, emojiBackground: string, backgroundSize = '100px 100px') {
     let background = 'white';
     let foreground = 'black';
     let radial = 'lightgray';
@@ -57,10 +57,15 @@ function getCss(theme: string, fontSize: string, emojiBackground: string) {
         src: url(data:font/ttf;charset=utf-8;base64,${tw}) format('truetype');
     }
 
+    * {
+        font-family: 'Twitter', sans-serif;
+        font-style: normal;
+    }
+
     body {
         background: ${background};
         background-image: ${bgImage};
-        background-size: 100px 100px;
+        background-size: ${backgroundSize};
         height: 100vh;
         display: flex;
         text-align: center;
@@ -113,10 +118,18 @@ function getCss(theme: string, fontSize: string, emojiBackground: string) {
     }`;
 }
 
+const defaultOption = {
+    size: 60,
+    sizeX: 40,
+    sizeY: 38,
+    spaceX: 0,
+    spaceY: 0,
+}
+
 export function getHtml(parsedReq: ParsedRequest) {
     const { text, theme, md, fontSize, images, widths, heights, confettie } = parsedReq;
 
-    const emojis = formatEmojis(['🧐','🐵','🐮']);
+    const [emojis, backgroundSize] = formatEmojis(['🧐','🐵','🐮'], defaultOption);
     const background = `url("data:image/svg+xml;utf8,${emojis.replaceAll('"', `\\'`)}")`;
     return `<!DOCTYPE html>
 <html>
@@ -128,7 +141,7 @@ export function getHtml(parsedReq: ParsedRequest) {
         confettie ? '<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>' : ''
     }
     <style>
-        ${getCss(theme, fontSize, background)}
+        ${getCss(theme, fontSize, background, backgroundSize)}
     </style>
 </head>
     <body>
