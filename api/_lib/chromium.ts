@@ -13,10 +13,15 @@ async function getPage(isDev: boolean) {
     return _page;
 }
 
-export async function getScreenshot(html: string, type: FileType, isDev: boolean) {
+const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
+
+export async function getScreenshot(html: string, type: FileType, isDev: boolean, wait: boolean) {
     const page = await getPage(isDev);
     await page.setViewport({ width: 2048, height: 1170 });
     await page.setContent(html);
+    if (wait) {
+        await sleep(1000)
+    }
     const file = await page.screenshot({ type });
     return file;
 }

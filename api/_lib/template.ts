@@ -100,16 +100,20 @@ function getCss(theme: string, fontSize: string) {
 }
 
 export function getHtml(parsedReq: ParsedRequest) {
-    const { text, theme, md, fontSize, images, widths, heights } = parsedReq;
-    console.log(marked(text));
+    const { text, theme, md, fontSize, images, widths, heights, confettie } = parsedReq;
     return `<!DOCTYPE html>
 <html>
+<head>
     <meta charset="utf-8">
     <title>Generated Image</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    ${
+        confettie ? '<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>' : ''
+    }
     <style>
         ${getCss(theme, fontSize)}
     </style>
+</head>
     <body>
         <div>
             <div class="spacer">
@@ -127,6 +131,35 @@ export function getHtml(parsedReq: ParsedRequest) {
             </div>
         </div>
     </body>
+    ${
+        confettie ? `
+        <script>
+            var duration = 15 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 50, spread: 360, ticks: 60, zIndex: 0 };
+            
+            function randomInRange(min, max) {
+            return Math.random() * (max - min) + min;
+            }
+            
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+                
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+                
+                var particleCount = 100 * (timeLeft / duration);
+                // since particles fall down, start a bit higher than random
+                // only on the sides of text
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.05, 0.3), y: Math.random() - 0.2 }, scalar: randomInRange(0.5, 3) }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.95), y: Math.random() - 0.2 }, scalar: randomInRange(0.5, 3) }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.05, 0.3), y: Math.random() - 0.2 }}));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.95), y: Math.random() - 0.2 }}));
+            }, 100);
+        </script>` : ''
+    }
+    
 </html>`;
 }
 
