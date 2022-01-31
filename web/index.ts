@@ -181,7 +181,8 @@ interface AppState extends ParsedRequest {
     widths: string[];
     heights: string[];
     overrideUrl: URL | null;
-    confettie: boolean;
+    emojiText: string;
+    date: number;
 }
 
 type SetState = (state: Partial<AppState>) => void;
@@ -211,7 +212,9 @@ const App = (_: any, state: AppState, setState: SetState) => {
         messageToast = '',
         loading = true,
         overrideUrl = null,
-        confettie = false,
+        showConfetties = false,
+        emojiText='❤️❤️❤️',
+        date = 0,
     } = state;
     const mdValue = md ? '1' : '0';
     const url = new URL(window.location.origin);
@@ -219,7 +222,12 @@ const App = (_: any, state: AppState, setState: SetState) => {
     url.searchParams.append('theme', theme);
     url.searchParams.append('md', mdValue);
     url.searchParams.append('fontSize', fontSize);
-    url.searchParams.append('confettie', confettie ? '1' : '0');
+    if (showConfetties || emojiText !== '') {
+        url.searchParams.append('date', date.toString());
+    }
+    if (showConfetties) {
+        url.searchParams.append('showConfetties', '1');
+    }
     for (let image of images) {
         url.searchParams.append('images', image);
     }
@@ -229,6 +237,10 @@ const App = (_: any, state: AppState, setState: SetState) => {
     for (let height of heights) {
         url.searchParams.append('heights', height);
     }
+    for (let emoji of [...emojiText]) {
+        url.searchParams.append('emojis', emoji);
+    }
+
 
     return H('div',
         { className: 'split' },
@@ -280,11 +292,21 @@ const App = (_: any, state: AppState, setState: SetState) => {
                     })
                 }),
                 H(Field, {
-                    label: 'Confetti*',
+                    label: 'Randomji ⚠️',
+                    input: H(TextInput, {
+                        value: emojiText,
+                        oninput: (val: string) => {
+                            console.log('oninput ' + val);
+                            setLoadingState({ emojiText: val, overrideUrl: url });
+                        }
+                    })
+                }),
+                H(Field, {
+                    label: 'Confetti ⚠️',
                     input: H(Checkbox, {
                         value: text,
                         onclick: () => {
-                            setLoadingState({ confettie: !confettie, overrideUrl: url});
+                            setLoadingState({ showConfetties: !showConfetties, overrideUrl: url});
                         }
                     })
                 }),
@@ -303,21 +325,21 @@ const App = (_: any, state: AppState, setState: SetState) => {
                             { className: 'field-flex' },
                             H(Dropdown, {
                                 options: widthOptions,
-                                value: widths[i + 1],
+                                value: widths[i],
                                 small: true,
                                 onchange: (val: string) =>  {
                                     let clone = [...widths];
-                                    clone[i + 1] = val;
+                                    clone[i] = val;
                                     setLoadingState({ widths: clone });
                                 }
                             }),
                             H(Dropdown, {
                                 options: heightOptions,
-                                value: heights[i + 1],
+                                value: heights[i],
                                 small: true,
                                 onchange: (val: string) =>  {
                                     let clone = [...heights];
-                                    clone[i + 1] = val;
+                                    clone[i] = val;
                                     setLoadingState({ heights: clone });
                                 }
                             })
@@ -344,6 +366,15 @@ const App = (_: any, state: AppState, setState: SetState) => {
                         label: `Add Image ${images.length + 1}`,
                         onclick: () => {
                             setLoadingState({ images: [...images, ''] })
+                        }
+                    }),
+                }),
+                H(Field, {
+                    label: 'Refresh',
+                    input: H(Button, {
+                        label: `Refresh`,
+                        onclick: () => {
+                            setLoadingState({ date: Date.now() })
                         }
                     }),
                 }),

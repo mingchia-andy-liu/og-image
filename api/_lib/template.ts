@@ -1,11 +1,10 @@
 
 import { readFileSync } from 'fs';
 import { marked } from 'marked';
+import { emojify, formatEmojis } from './emoji';
 import { sanitizeHtml } from './sanitizer';
 import { ParsedRequest } from './types';
-const twemoji = require('twemoji');
-const twOptions = { folder: 'svg', ext: '.svg' };
-const emojify = (text: string) => twemoji.parse(text, twOptions);
+
 
 const rglr = readFileSync(`${__dirname}/../_fonts/Inter-Regular.woff2`).toString('base64');
 const bold = readFileSync(`${__dirname}/../_fonts/Inter-Bold.woff2`).toString('base64');
@@ -21,6 +20,7 @@ function getCss(theme: string, fontSize: string) {
         foreground = 'white';
         radial = 'dimgray';
     }
+
     return `
     @font-face {
         font-family: 'Inter';
@@ -41,7 +41,7 @@ function getCss(theme: string, fontSize: string) {
         font-style: normal;
         font-weight: normal;
         src: url(data:font/woff2;charset=utf-8;base64,${mono})  format("woff2");
-      }
+    }
 
     body {
         background: ${background};
@@ -52,6 +52,8 @@ function getCss(theme: string, fontSize: string) {
         text-align: center;
         align-items: center;
         justify-content: center;
+        font-family: 'Inter', 'Vera', sans-serif;
+        font-style: normal;
     }
 
     code {
@@ -91,16 +93,23 @@ function getCss(theme: string, fontSize: string) {
     }
     
     .heading {
-        font-family: 'Inter', sans-serif;
         font-size: ${sanitizeHtml(fontSize)};
-        font-style: normal;
         color: ${foreground};
         line-height: 1.8;
+    }
+    
+    .random {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: -1;
     }`;
 }
 
 export function getHtml(parsedReq: ParsedRequest) {
-    const { text, theme, md, fontSize, images, widths, heights, confettie } = parsedReq;
+    const { text, theme, md, fontSize, images, widths, heights, showConfetties, emojis } = parsedReq;
+
+    const emojiEles = formatEmojis(emojis);
     return `<!DOCTYPE html>
 <html>
 <head>
@@ -108,13 +117,14 @@ export function getHtml(parsedReq: ParsedRequest) {
     <title>Generated Image</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     ${
-        confettie ? '<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>' : ''
+        showConfetties ? '<script src="https://cdn.jsdelivr.net/npm/confetti-js@0.0.18/dist/index.min.js"></script>' : ''
     }
     <style>
         ${getCss(theme, fontSize)}
     </style>
 </head>
     <body>
+        <canvas id="confetti-holder" style="position: absolute;"></canvas>
         <div>
             <div class="spacer">
             ${images.length !== 0 
@@ -125,41 +135,19 @@ export function getHtml(parsedReq: ParsedRequest) {
                     </div>
                     <div class="spacer">` 
                 : ''}
-            <div class="heading">${emojify(
-                md ? marked(text) : sanitizeHtml(text)
-            )}
+            <div class="heading">${emojify(md ? marked(text) : sanitizeHtml(text))}
             </div>
+            ${emojiEles}
         </div>
     </body>
     ${
-        confettie ? `
+        showConfetties ? `
         <script>
-            var duration = 15 * 1000;
-            var animationEnd = Date.now() + duration;
-            var defaults = { startVelocity: 50, spread: 360, ticks: 60, zIndex: 0 };
-            
-            function randomInRange(min, max) {
-            return Math.random() * (max - min) + min;
-            }
-            
-            var interval = setInterval(function() {
-                var timeLeft = animationEnd - Date.now();
-                
-                if (timeLeft <= 0) {
-                    return clearInterval(interval);
-                }
-                
-                var particleCount = 100 * (timeLeft / duration);
-                // since particles fall down, start a bit higher than random
-                // only on the sides of text
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.05, 0.3), y: Math.random() - 0.2 }, scalar: randomInRange(0.5, 3) }));
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.95), y: Math.random() - 0.2 }, scalar: randomInRange(0.5, 3) }));
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.05, 0.3), y: Math.random() - 0.2 }}));
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.95), y: Math.random() - 0.2 }}));
-            }, 100);
+            var confettiSettings = { target: 'my-canvas' };
+            var confetti = new ConfettiGenerator({"target":"confetti-holder","max":"60","size":"5","animate":true,"props":["circle","square","triangle","line"],"colors":[[165,104,246],[230,61,135],[0,199,228],[253,214,126]],"clock":"25","rotate":true,"width":"2048","height":"1170","start_from_edge":false,"respawn":true});
+            confetti.render();
         </script>` : ''
     }
-    
 </html>`;
 }
 
