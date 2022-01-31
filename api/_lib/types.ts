@@ -10,5 +10,6 @@ export interface ParsedRequest {
     images: string[];
     widths: string[];
     heights: string[];
-    confettie: boolean;
+    showConfetties: boolean;
+    emojis: string[];
 }
