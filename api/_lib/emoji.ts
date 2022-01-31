@@ -20,7 +20,7 @@ export const formatEmojis = (emojis: string[]) => {
             return `
             <div 
                 class="random" 
-                style="font-size: ${randomInRange(1, 20)}em;top:${x}%; left:${y}%; transform: rotate(${deg}deg);"
+                style="font-size: ${randomInRange(1, 12)}em;top:${x}%; left:${y}%; transform: rotate(${deg}deg);"
             >
                 ${emoji}
             </div>`

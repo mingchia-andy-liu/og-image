@@ -96,14 +96,20 @@ function getCss(theme: string, fontSize: string) {
         font-size: ${sanitizeHtml(fontSize)};
         color: ${foreground};
         line-height: 1.8;
+        z-index: 9;
     }
     
     .random {
         position: absolute;
         top: 0;
         left: 0;
+        z-index: -10;
+    }
+    
+    #confetti-holder {
         z-index: -1;
-    }`;
+    }
+    `;
 }
 
 export function getHtml(parsedReq: ParsedRequest) {
