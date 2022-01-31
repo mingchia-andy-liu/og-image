@@ -220,7 +220,9 @@ const App = (_: any, state: AppState, setState: SetState) => {
     url.searchParams.append('theme', theme);
     url.searchParams.append('md', mdValue);
     url.searchParams.append('fontSize', fontSize);
-    url.searchParams.append('showConfetties', showConfetties ? '1' : '');
+    if (showConfetties) {
+        url.searchParams.append('showConfetties', '1');
+    }
     for (let image of images) {
         url.searchParams.append('images', image);
     }
@@ -284,7 +286,7 @@ const App = (_: any, state: AppState, setState: SetState) => {
                     })
                 }),
                 H(Field, {
-                    label: 'Emoji background*',
+                    label: 'Emoji background ⚠️',
                     input: H(TextInput, {
                         value: emojisText,
                         oninput: (val: string) => {
@@ -294,7 +296,7 @@ const App = (_: any, state: AppState, setState: SetState) => {
                     })
                 }),
                 H(Field, {
-                    label: 'Confetti**',
+                    label: 'Confetti ⚠️',
                     input: H(Checkbox, {
                         value: text,
                         onclick: () => {
@@ -317,21 +319,21 @@ const App = (_: any, state: AppState, setState: SetState) => {
                             { className: 'field-flex' },
                             H(Dropdown, {
                                 options: widthOptions,
-                                value: widths[i + 1],
+                                value: widths[i],
                                 small: true,
                                 onchange: (val: string) =>  {
                                     let clone = [...widths];
-                                    clone[i + 1] = val;
+                                    clone[i] = val;
                                     setLoadingState({ widths: clone });
                                 }
                             }),
                             H(Dropdown, {
                                 options: heightOptions,
-                                value: heights[i + 1],
+                                value: heights[i],
                                 small: true,
                                 onchange: (val: string) =>  {
                                     let clone = [...heights];
-                                    clone[i + 1] = val;
+                                    clone[i] = val;
                                     setLoadingState({ heights: clone });
                                 }
                             })

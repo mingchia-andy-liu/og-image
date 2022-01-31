@@ -148,30 +148,30 @@ export function getHtml(parsedReq: ParsedRequest) {
     ${
         showConfetties ? `
         <script>
-            var timeout = -1;
             var duration = 15 * 1000;
             var animationEnd = Date.now() + duration;
-            var defaults = { startVelocity: 50, spread: 360, ticks: 60, zIndex: 0 };
+            var defaults = { startVelocity: 100, spread: 360, ticks: 60, zIndex: 0 };
             
             function randomInRange(min, max) {
                 return Math.random() * (max - min) + min;
             }
             
+            var iterations = 0;
             var interval = setInterval(function() {
                 var timeLeft = animationEnd - Date.now();
                 
                 if (timeLeft <= 0) {
                     return clearInterval(interval);
                 }
+
+                iterations++;
                 
                 var particleCount = 100 * (timeLeft / duration);
                 // since particles fall down, start a bit higher than random
                 // only on the sides of text
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.05, 0.3), y: Math.random() - 0.2 }, scalar: randomInRange(0.5, 3) }));
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.95), y: Math.random() - 0.2 }, scalar: randomInRange(0.5, 3) }));
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.05, 0.3), y: Math.random() - 0.2 }}));
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.95), y: Math.random() - 0.2 }}));
-            }, 100);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.05, 0.3), y: Math.random() - 0.2 }, scalar: randomInRange(0.5, 2) }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.95), y: Math.random() - 0.2 }, scalar: randomInRange(0.5, 2) }));
+            }, 30);
         </script>` : ''
     }
     

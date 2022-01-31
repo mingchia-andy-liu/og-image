@@ -32,13 +32,12 @@ export function parseRequest(req: IncomingMessage) {
         theme: theme === 'dark' ? 'dark' : 'light',
         md: md === '1' || md === 'true',
         fontSize: fontSize || '96px',
-        images: getArray(images),
+        images: removeNullOrEmpty(getArray(images)),
         widths: getArray(widths),
         heights: getArray(heights),
         showConfetties: showConfetties === '1',
         emojis: getArray(emojis),
     };
-    parsedRequest.images = removeNullOrEmpty(parsedRequest.images);
     return parsedRequest;
 }
 
@@ -52,6 +51,6 @@ function getArray(stringOrArray: string[] | string | undefined): string[] {
     }
 }
 
-const removeNullOrEmpty = (images: string[]): string[] => {
-    return images.filter((image) => image != null && image !== '');
+const removeNullOrEmpty = (array: string[]): string[] => {
+    return array.filter((item) => item != null && item !== '');
 }

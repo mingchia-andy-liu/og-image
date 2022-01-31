@@ -13,9 +13,10 @@ export const formatEmojis = (emojis: string[]) => {
         .concat(emojis)
         .concat(emojis)
         .concat(emojis)
+        .concat(emojis)
         .map(emoji => {
-            const x = randomInRange(-10, 110);
-            const y = randomInRange(-10, 110);
+            const x = randomInRange(0, 100);
+            const y = randomInRange(0, 100);
             const deg = randomInRange(0, 360);
             return `
             <div 
