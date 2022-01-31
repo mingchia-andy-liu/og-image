@@ -7,7 +7,6 @@ function randomInRange(min: number, max: number) {
     return Math.random() * (max - min) + min;
 }
 
-
 export const formatEmojis = (emojis: string[]) => {
     return emojis
         .concat(emojis)
@@ -21,7 +20,7 @@ export const formatEmojis = (emojis: string[]) => {
             return `
             <div 
                 class="random" 
-                style="font-size: ${randomInRange(1, 15)}em;top:${x}%; left:${y}%; transform: rotate(${deg}deg);"
+                style="font-size: ${randomInRange(1, 20)}em;top:${x}%; left:${y}%; transform: rotate(${deg}deg);"
             >
                 ${emoji}
             </div>`

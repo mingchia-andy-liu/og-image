@@ -14,7 +14,6 @@ function getCss(theme: string, fontSize: string) {
     let background = 'white';
     let foreground = 'black';
     let radial = 'lightgray';
-    let bgImage = `radial-gradient(circle at 25px 25px, ${radial} 2%, transparent 0%), radial-gradient(circle at 75px 75px, ${radial} 2%, transparent 0%)`;
 
     if (theme === 'dark') {
         background = 'black';
@@ -44,21 +43,16 @@ function getCss(theme: string, fontSize: string) {
         src: url(data:font/woff2;charset=utf-8;base64,${mono})  format("woff2");
     }
 
-    * {
-        font-family: 'Inter', 'Vera', sans-serif;
-        font-style: normal;
-    }
-
     body {
         background: ${background};
-        background-image: ${bgImage};
+        background-image: radial-gradient(circle at 25px 25px, ${radial} 2%, transparent 0%), radial-gradient(circle at 75px 75px, ${radial} 2%, transparent 0%);
         background-size: 100px 100px;
         height: 100vh;
         display: flex;
         text-align: center;
         align-items: center;
         justify-content: center;
-        font-family: 'Twitter', sans-serif;
+        font-family: 'Inter', 'Vera', sans-serif;
         font-style: normal;
     }
 
