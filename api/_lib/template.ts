@@ -174,7 +174,6 @@ export function getHtml(parsedReq: ParsedRequest) {
             }, 30);
         </script>` : ''
     }
-    
 </html>`;
 }
 

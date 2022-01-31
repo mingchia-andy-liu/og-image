@@ -181,7 +181,8 @@ interface AppState extends ParsedRequest {
     widths: string[];
     heights: string[];
     overrideUrl: URL | null;
-    emojisText: string;
+    emojiText: string;
+    date: number;
 }
 
 type SetState = (state: Partial<AppState>) => void;
@@ -212,7 +213,8 @@ const App = (_: any, state: AppState, setState: SetState) => {
         loading = true,
         overrideUrl = null,
         showConfetties = false,
-        emojisText='',
+        emojiText='❤️❤️❤️',
+        date = 0,
     } = state;
     const mdValue = md ? '1' : '0';
     const url = new URL(window.location.origin);
@@ -220,6 +222,9 @@ const App = (_: any, state: AppState, setState: SetState) => {
     url.searchParams.append('theme', theme);
     url.searchParams.append('md', mdValue);
     url.searchParams.append('fontSize', fontSize);
+    if (showConfetties || emojiText !== '') {
+        url.searchParams.append('date', date.toString());
+    }
     if (showConfetties) {
         url.searchParams.append('showConfetties', '1');
     }
@@ -232,9 +237,10 @@ const App = (_: any, state: AppState, setState: SetState) => {
     for (let height of heights) {
         url.searchParams.append('heights', height);
     }
-    for (let emoji of [...emojisText]) {
+    for (let emoji of [...emojiText]) {
         url.searchParams.append('emojis', emoji);
     }
+
 
     return H('div',
         { className: 'split' },
@@ -286,12 +292,12 @@ const App = (_: any, state: AppState, setState: SetState) => {
                     })
                 }),
                 H(Field, {
-                    label: 'Emoji background ⚠️',
+                    label: 'Randomji ⚠️',
                     input: H(TextInput, {
-                        value: emojisText,
+                        value: emojiText,
                         oninput: (val: string) => {
                             console.log('oninput ' + val);
-                            setLoadingState({ emojisText: val, overrideUrl: url });
+                            setLoadingState({ emojiText: val, overrideUrl: url });
                         }
                     })
                 }),
@@ -360,6 +366,15 @@ const App = (_: any, state: AppState, setState: SetState) => {
                         label: `Add Image ${images.length + 1}`,
                         onclick: () => {
                             setLoadingState({ images: [...images, ''] })
+                        }
+                    }),
+                }),
+                H(Field, {
+                    label: 'Refresh',
+                    input: H(Button, {
+                        label: `Refresh`,
+                        onclick: () => {
+                            setLoadingState({ date: Date.now() })
                         }
                     }),
                 }),
