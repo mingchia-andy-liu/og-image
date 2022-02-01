@@ -18,6 +18,7 @@ I also need some other features that are only for me.
 * [x] Randomize emoji in the background 🙂
 * [x] Confetties 🎊
 * [x] Refresh on same setting
+* [x] Fix non-english characters* (Checkout non-eng-cha branch. There is 50mb size limit & font files are too large to deploy.) Run this locally.
 
 ### What is an Open Graph Image?
 
