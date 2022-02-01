@@ -9,6 +9,11 @@ import { ParsedRequest } from './types';
 const rglr = readFileSync(`${__dirname}/../_fonts/Inter-Regular.woff2`).toString('base64');
 const bold = readFileSync(`${__dirname}/../_fonts/Inter-Bold.woff2`).toString('base64');
 const mono = readFileSync(`${__dirname}/../_fonts/Vera-Mono.woff2`).toString('base64');
+// note there is a 50mb
+const jp = readFileSync(`${__dirname}/../_fonts/NotoSansJP-Regular.otf`).toString('base64');
+const ch = readFileSync(`${__dirname}/../_fonts/NotoSansTC-Regular.otf`).toString('base64');
+const kr = readFileSync(`${__dirname}/../_fonts/NotoSansKR-Regular.otf`).toString('base64');
+
 
 function getCss(theme: string, fontSize: string) {
     let background = 'white';
@@ -43,6 +48,27 @@ function getCss(theme: string, fontSize: string) {
         src: url(data:font/woff2;charset=utf-8;base64,${mono})  format("woff2");
     }
 
+    @font-face {
+        font-family: 'Noto Sans Japanese';
+        font-style: normal;
+        font-weight: normal;
+        src: url(data:font/otf;charset=utf-8;base64,${jp})  format("opentype");
+    }
+
+    @font-face {
+        font-family: 'Noto Sans Traditional Chinese';
+        font-style: normal;
+        font-weight: normal;
+        src: url(data:font/otf;charset=utf-8;base64,${ch})  format("opentype");
+    }
+
+    @font-face {
+        font-family: 'Noto Sans Korean';
+        font-style: normal;
+        font-weight: normal;
+        src: url(data:font/otf;charset=utf-8;base64,${kr})  format("opentype");
+    }
+
     body {
         background: ${background};
         background-image: radial-gradient(circle at 25px 25px, ${radial} 2%, transparent 0%), radial-gradient(circle at 75px 75px, ${radial} 2%, transparent 0%);
@@ -52,7 +78,7 @@ function getCss(theme: string, fontSize: string) {
         text-align: center;
         align-items: center;
         justify-content: center;
-        font-family: 'Inter', 'Vera', sans-serif;
+        font-family: 'Inter', 'Noto Sans Japanese', 'Noto Sans Traditional Chinese', 'Noto Sans Korean', 'Vera', sans-serif;
         font-style: normal;
     }
 
